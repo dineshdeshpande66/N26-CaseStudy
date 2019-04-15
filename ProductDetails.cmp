@@ -1,0 +1,30 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="ProductDetail" access="global" >
+<aura:attribute name="productDetails" type="Package__c[]"  />
+<aura:attribute name="recordId" type="String" />
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<h1> <b> <center> Product Details </center> </b> </h1>    
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered">         
+        <thead>
+            <tr class="slds-line-height_reset">
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Package Name">Package Name</div>
+                </th>
+                <th class="" scope="col">
+                    <div class="slds-truncate" title="Product Details">Product Details</div>
+                </th>                
+            </tr>
+        </thead>        
+        <tbody>            
+            <aura:iteration items="{!v.productDetails}" var="prodDetails">                
+                <tr class="slds-hint-parent">                    
+                    <td data-label="Account Name">
+                        <div class="slds-truncate" title="Name">{!prodDetails.Name}</div>
+                    </td>
+                    <td data-label="Close Date">
+                        <div class="slds-truncate" title="PackageName">{!prodDetails.Package_Product_Detail__c}</div>
+                    </td>                    
+                </tr>                
+            </aura:iteration>           
+        </tbody>
+    </table>   
+</aura:component>

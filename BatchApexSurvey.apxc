@@ -1,0 +1,96 @@
+/***************************************************************
+Class 					: BatchApexSurvey
+Developer 				: Dinesh Deshpande 
+Created Date 			: 04/13/2019
+Details 				: This class will send a survey link to All the contacts according to their Survey Date. 
+Test Coverage Classes	: 94%
+Change Log 				: 
+*****************************************************************/
+
+public class BatchApexSurvey implements Database.Batchable<SObject>, Database.Stateful{
+    
+    public List<Contact> lstContact;
+    
+    Exception[] errors = new Exception[0];
+    
+    Public BatchApexSurvey(){
+        this.lstContact = new List<Contact>(); 
+    }
+    
+    public Database.QueryLocator start(Database.BatchableContext BC)
+    { 
+        Integer qryLimit = Limits.getLimitEmailInvocations() - Limits.getEmailInvocations();
+        return Database.getQueryLocator([SELECT FirstName, Email, survey_date__c, Languages__c FROM Contact WHERE survey_date__c != NULL AND survey_date__c <= :System.now() ORDER BY survey_date__c ASC LIMIT 1]); 
+    }     
+    
+    public void execute(Database.BatchableContext info, List<Contact> lstContactRecords){
+        try
+        {          
+            if(lstContactRecords.size() > 0)            
+                lstContact.addAll(lstContactRecords);
+            
+        }catch(Exception e){
+            errors.add(e);
+        }
+    }
+    
+    public void finish(Database.BatchableContext info)
+    {   
+        List<Contact> lstContactObj = new List<Contact>(); 
+        
+        if(errors.isEmpty())
+        {
+            // Create a master list to store the emails that we will send
+            List<Messaging.SingleEmailMessage> masterListMails =  
+                new List<Messaging.SingleEmailMessage>();
+            
+            for (Contact myContact : lstContact)
+            {
+                // Define the email
+                Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage(); 
+                
+                // Set list of peoples who should recieve an email
+                List<String> sendTo = new List<String>();
+                
+                if(myContact.Email != NULL && myContact.FirstName != NULL)
+                {
+                    sendTo.add(myContact.Email);
+                    email.setToAddresses(sendTo);
+                    email.setTargetObjectId(myContact.Id);
+                    email.setReplyTo(Label.Reply_To);
+                    email.setSenderDisplayName(Label.SenderDisplayName);
+                    
+                    // Sets the parameters of the email
+                    email.setSubject(Label.Email_Subject);                 
+                    String body = 'Hey ' + myContact.FirstName + ',' + '\n';
+                    
+                    if(myContact.Languages__c.equalsIgnoreCase('de'))        			
+                        body = body + Label.Body_DE;            
+                    else 
+                        body = body + Label.Body_EN;
+                    
+                    body = body + Label.Survey_URL + myContact.Id; 
+                    
+                    email.setPlainTextBody( body );
+                    
+                    // Add your email address into the master list
+                    masterListMails.add(email);
+                    
+                    myContact.survey_date__c = null;
+                    lstContactObj.add(myContact);
+                }
+            }
+            
+            // Sends mass emails
+            if(masterListMails.size() > 0)  
+                Messaging.sendEmail(masterListMails);
+            
+            if(!lstContactObj.isEmpty())
+                Database.SaveResult[] srContactList = Database.update(lstContactObj, false);        
+        }   
+        else{
+            system.debug(' There is an Error while executing Batch:' + errors[0]);
+        } 
+        
+    }
+}

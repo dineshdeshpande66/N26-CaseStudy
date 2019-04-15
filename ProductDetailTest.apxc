@@ -1,0 +1,30 @@
+/***************************************************************
+Class 					: ProductDetailTest
+Developer 				: Dinesh Deshpande 
+Created Date 			: 4/14/2019
+Details 				: This is a test class for ProductDetail class 
+*****************************************************************/
+
+@isTest
+public class ProductDetailTest {
+    
+    static testmethod void testgetProductDetail()
+    {
+        Contact con = new Contact();                    
+        Test.startTest();
+        con = Test_DataFactory.prepareContact(true);
+        ProductDetail.getProductDetail(con.Product__c,con.Home_Country__c);
+        Test.stopTest();
+    }
+    
+    static testmethod void testgetContactDetail()
+    {
+        Case caseObj = new Case();                    
+        Test.startTest();
+        caseObj = Test_DataFactory.prepareCase(true);
+        ProductDetail.getContactDetail(caseObj.Id);
+        Test.stopTest();
+        
+    }
+    
+}

@@ -1,0 +1,2 @@
+// Schedule Apex Batch for Everyday 10 AM 
+System.schedule('Scheduled Survey Job', '0 0 10 * * ?', new BatchApexSurvey());

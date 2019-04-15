@@ -1,0 +1,53 @@
+/***************************************************************
+Class 					: Test_DataFactory
+Developer 				: Dinesh Deshpande 
+Created Date 			: 04/14/2019
+Details 				: This is a Test util class to setup Data
+*****************************************************************/
+@isTest
+public class Test_DataFactory {
+    
+	public Static Home_Country__c prepareHomeCountry(Boolean isInsert){ 
+         
+         Home_Country__c hcObj = new Home_Country__c();
+         hcObj.Name = 'DE';
+         if(isInsert)
+            insert hcObj;
+        return hcObj;   
+     }
+    
+    public Static Product2 prepareProduct(Boolean isInsert){ 
+         
+         Product2 prodObj = new Product2();
+         prodObj.Name = 'Black';
+         if(isInsert)
+            insert prodObj;
+        return prodObj;   
+     }
+    
+    public Static Case prepareCase(Boolean isInsert){ 
+         
+         Case caseObj = new Case();
+         caseObj.ContactId = prepareContact(true).Id;
+         if(isInsert)
+            insert caseObj;
+        return caseObj;   
+     }
+    
+    public Static Contact prepareContact(Boolean isInsert){          
+        
+        Contact conObj = new Contact();
+        conObj.FirstName = 'Test';
+        conObj.Lastname = 'McTesty';
+        conObj.survey_date__c= system.today();
+        conObj.Languages__c ='DE';	
+        conObj.Email = System.now().millisecond() + 'test@test.com'; 
+        conObj.Home_Country__c = prepareHomeCountry(true).Id;
+        conObj.Product__c = prepareProduct(true).Id;
+        if(isInsert)
+            insert conObj;
+        return conObj;       
+    }
+    
+    
+}

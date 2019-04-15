@@ -1,0 +1,29 @@
+/***************************************************************
+Class 					: BatchApexSurveyTest
+Developer 				: Dinesh Deshpande 
+Created Date 			: 4/13/2019
+Details 				: This is a test class for BatchApexSurvey class 
+*****************************************************************/
+@isTest
+public class BatchApexSurveyTest {
+    
+    static testmethod void testExecuteBatch()
+    {        
+        Contact con = new Contact();                    
+        
+        Test.startTest();
+        
+        con = Test_DataFactory.prepareContact(true);
+        BatchApexSurvey BAS = new BatchApexSurvey();
+        Id batchId = Database.executeBatch(BAS);
+        con.survey_date__c = null;	        
+        
+        Test.stopTest();
+        
+        System.assertEquals(1, [select count() from Contact where Languages__c ='DE']);
+        System.assertEquals(1, [select count() from Contact where survey_date__c =null]);
+        
+    }
+    
+    
+}

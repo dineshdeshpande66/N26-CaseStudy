@@ -1,0 +1,20 @@
+/***************************************************************
+Class 					: ProductDetail
+Developer 				: Dinesh Deshpande 
+Created Date 			: 04/14/2019
+Details 				: This class will return Product Details for Product & Home country related to Contact. 
+Test Coverage Classes	: 100%
+Change Log 				: 
+*****************************************************************/
+public with sharing class ProductDetail {
+    @AuraEnabled    
+    public static List<Package__c> getProductDetail(String productID, String countryID){
+    	return [SELECT Name, Package_Product_Detail__c from Package__c where Product__c = :String.escapeSingleQuotes(productID) AND Home_Country__c = :String.escapeSingleQuotes(countryID)];        
+    }
+    
+	@AuraEnabled    
+    public static Case getContactDetail(String caseID){
+    	return [SELECT ID, Contact.Product__c,Contact.Home_Country__c from Case where ID = :caseID];        
+    }  
+    
+}
